@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<base href="/">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1"/>
+	<title>map</title>
+	<link rel="stylesheet" href="styles.css"></link>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-touch.js"></script>
+	<script type="text/javascript">
+		(function(window, document, ng) {
+
+			ng.app = ng.module("interactable", ["ngTouch"])
+				.run(["$rootScope", function($rootScope) {
+					// found many places on the net
+					$rootScope.$apply_safe = function(fn) {
+						var phase = this.$root.$$phase;
+						if (phase === "$apply" || phase === "$digest") {
+							fn ? this.$eval(fn) : ng.noop();
+						}
+						else {
+							fn ? this.$apply(fn) : this.$apply();
+						}
+					};
+				}])
+				.controller("mainCtrl", ["$scope", function($scope) {
+
+
+				}]);
+
+
+			ng.element(document).ready(function() {
+				ng.bootstrap(document, ["interactable"]);
+			});
+
+		})(window, document, window.angular);
+
+	</script>
+</head>
+<body>
+
+	<div ng-controller="mainCtrl as main">
+		<div dir-interactable="{constrain_ar: true, width: 180, height: 180, move_enabled: false, resize_enabled: false, rotate_enabled: false, enabled: false}">
+			<img src="http://www.stuff.co.nz/etc/designs/ffx/nz/stuff/social-media-logos/stuff-180x180.jpg"/>
+		</div>
+		<div dir-interactable="{constrain_ar: true, width: 100, height: 100, x: 200, y: 300}">
+			<img src="http://www.stuff.co.nz/etc/designs/ffx/nz/stuff/social-media-logos/stuff-180x180.jpg"/>
+		</div>
+		<div dir-interactable="{width: 100, height: 100, x: 500, y: 400}" style="background-color: blue;">
+		</div>
+
+
+
+	</div>
+
+	<script src="dir-interactable.js"></script>
+	<script src="string.format.js"></script>
+</body>
+</html>

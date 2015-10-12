@@ -1,0 +1,225 @@
+/* Editor handles */
+.i-resizable-handle {
+	position: absolute;
+	z-index: 100000;
+	visibility: hidden;
+}
+
+.i-resizable-handle::before {
+	background: #fff;
+	content: '';
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	position: absolute;
+	border: 2px solid #ee552a;
+	box-sizing: border-box;
+	top: 50%;
+	left: 50%;
+	margin: -6px 0 0 -6px;
+}
+
+.i-resizable-handle-nw {
+	left: -18px;
+	top: -18px;
+	cursor: nwse-resize;
+}
+
+.i-resizable-handle-ne {
+	right: -18px;
+	top: -18px;
+	cursor: nesw-resize;
+}
+
+.i-resizable-handle-se {
+	right: -18px;
+	bottom: -18px;
+	cursor: nwse-resize;
+}
+
+.i-resizable-handle-sw {
+	left: -18px;
+	bottom: -18px;
+	cursor: nesw-resize;
+}
+
+.i-resizable-handle-nw.small-content::before {
+	margin: 4px 0 0 4px;
+}
+
+.i-resizable-handle-ne.small-content::before {
+	margin: 4px 0 0 -16px;
+}
+
+.i-resizable-handle-se.small-content::before {
+	margin: -16px 0 0 -16px;
+}
+
+.i-resizable-handle-sw.small-content::before {
+	margin: -16px 0 0 4px;
+}
+
+.i-resizable-handle-nw.small-content {
+	left: -28px;
+	top: -28px;
+}
+
+.i-resizable-handle-ne.small-content {
+	right: -28px;
+	top: -28px;
+}
+
+.i-resizable-handle-se.small-content {
+	right: -28px;
+	bottom: -28px;
+}
+
+.i-resizable-handle-sw.small-content {
+	left: -28px;
+	bottom: -28px;
+}
+
+.i-lock-handle {
+	position: absolute;
+	z-index: 100000;
+	visibility: hidden;
+}
+
+.i-lock-handle.btnTransparent {
+	cursor: not-allowed;
+}
+
+.i-lock-handle-nw {
+	left: -18px;
+	top: -21px;
+}
+
+.i-lock-handle-ne {
+	right: -19px;
+	top: -22px;
+}
+
+.i-lock-handle-se {
+	right: -19px;
+	bottom: -18px;
+}
+
+.i-lock-handle-sw {
+	left: -19px;
+	bottom: -18px;
+}
+
+.i-rotatable-handle,
+.i-rotatable-lock-handle {
+	height: 34px;
+	width: 34px;
+	border-radius: 50%;
+	cursor: pointer;
+	margin-left: -17px;
+	top: -34px;
+	left: 50%;
+	position: absolute;
+	visibility: hidden;
+}
+
+.i-rotatable-handle::before,
+.i-rotatable-lock-handle::before {
+	background: #ee552a;
+	content: '';
+	height: 7px;
+	width: 2px;
+	bottom: 2px;
+	left: 50%;
+	margin-left: -1px;
+	position: absolute;
+}
+
+.i-rotatable-handle::after,
+.i-rotatable-lock-handle::after {
+	box-sizing: border-box;
+	content: '';
+	height: 16px;
+	width: 16px;
+	border-radius: 50%;
+	background-color: #fff;
+	border: 2px solid #ee552a;
+	cursor: pointer;
+	top: 50%;
+	left: 50%;
+	margin: -8px 0 0 -8px;
+	position: absolute;
+}
+
+.i-rotatable-lock-handle,
+.i-rotatable-lock-handle::after {
+	cursor: not-allowed;
+	visibility: hidden;
+}
+
+/* Item Border */
+.i-control-default {
+	border: 2px solid transparent;
+}
+
+.i-control-selected,
+.i-control-over {
+	cursor: pointer;
+	border: 2px solid #ee552a;
+	position: relative;
+}
+
+.i-control-selected::before,
+.i-control-over::before {
+	position: absolute;
+	content: '';
+	border: 2px dashed white;
+	margin: -2px;
+	padding: 2px;
+	top: 0;
+	right: 0;
+	left: 0;
+	bottom: 0;
+}
+
+.i-control-selected::after {
+	position: absolute;
+	content: '';
+	top: -15px;
+	left: -15px;
+	z-index: -1;
+	bottom: -15px;
+	right: -15px;
+}
+
+.i-control-selected {
+	cursor: not-allowed;
+}
+
+.i-control-move-enabled {
+	cursor: move;
+}
+
+.i-content,
+.i-content * {
+	width: 100%;
+	height: 100%;
+}
+
+.shown {
+	visibility: visible;
+}
+
+.touchBox {
+	height: 34px;
+	width: 34px;
+}
+
+.unselectable {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-user-drag: none;
+	user-drag: none;
+}
