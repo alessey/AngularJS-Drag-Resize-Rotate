@@ -49,10 +49,11 @@
 							x: scope.settings.x,
 							y: scope.settings.y,
 							angle: scope.settings.angle,
-							aspect_ratio: 1,
+							aspect_ratio: scope.settings.width / scope.settings.height,
 							selected: false
 						};
 
+						/* scope linked properties */
 						scope.vm = {};
 						Object.defineProperty(scope.vm, "default", {
 							get: function() {
@@ -85,6 +86,44 @@
 							}
 						});
 
+						/* set up initial state */
+						elem.
+							css({"position": "absolute"}).
+							add(elem.find("img")).
+								attr("draggable", "false").
+								attr("unselectable", "on").
+								addClass("unselectable").
+								on("dragstart", function() { return false; } );
+
+						/* timeout to give elements a cycle to render */
+						$timeout(function() {
+							set_position();
+							set_rotation(control.angle);
+						}, 100);
+
+						/* if enabled, set up events */
+						if (scope.settings.enabled) {
+							elem.
+								off("mousedown.{0} touchstart.{0}".format(control.id)).
+								on("mousedown.{0} touchstart.{0}".format(control.id), mousedown);
+
+							$document.
+								off("mouseup.{0} touchend.{0}".format(control.id)).
+								on("mouseup.{0} touchend.{0}".format(control.id), function(e) {
+									$document.off("mousemove.{0} touchmove.{0}".format(control.id));
+								}).
+								off("mousedown.{0} touchstart.{0}".format(control.id)).
+								on("mousedown.{0} touchstart.{0}".format(control.id), function(e) {
+									var selected = e.target.id === control.id || ng.element(e.target).closest(".i-control").attr("id") === control.id;
+									if (!selected && control.selected) {
+										scope.$root.$apply_safe(function() {
+											control.selected = false;
+										});
+									}
+								});
+						}
+
+						/* utility functions */
 						var set_rotation = function(angle) {
 							elem.css({"transform": "rotate({0}rad)".format(angle)});
 						};
@@ -104,10 +143,6 @@
 								"left": Math.round(control.x),
 								"top": Math.round(control.y)
 							});
-						};
-
-						var set_aspect_ratio = function() {
-							control.aspect_ratio = control.width / control.height;
 						};
 
 						var get_rotation_offset = function() {
@@ -184,7 +219,8 @@
 							return typeof e.pageX != "undefined" ? e : e.originalEvent.changedTouches[0];
 						};
 
-						var mousedown = function(e) {
+						/* event handlers */
+						function mousedown(e) {
 							if (!control.selected) {
 								scope.$root.$apply_safe(function() {
 									control.selected = true;
@@ -238,86 +274,22 @@
 										case "ne":
 											$document.
 												off("mousemove.{0} touchmove.{0}".format(control.id)).
-												on("mousemove.{0} touchmove.{0}".format(control.id), function(e) {
-													e.preventDefault();  // prevent scrolling on touch devices
-
-													var loc = get_event_location(e);
-													var delta = calculate_delta(loc);
-
-													if (scope.settings.constrain_ar) {
-														delta.x = -delta.y * control.aspect_ratio;
-													}
-
-													control.width = control.width + delta.x;
-													control.height = control.height - delta.y;
-													control.x = control.x + delta.y * Math.sin(-control.angle) - (0.5 * delta.y * Math.sin(-control.angle)) - delta.x * 0.5 * (1 - Math.cos(control.angle));
-													control.y = control.y + delta.y * Math.cos(-control.angle) + (0.5 * delta.y * (1 - Math.cos(-control.angle))) + (0.5 * delta.x * Math.sin(control.angle));
-
-													set_position();
-												});
+												on("mousemove.{0} touchmove.{0}".format(control.id), ne_resize);
 											break;
 										case "se":
 											$document.
 												off("mousemove.{0} touchmove.{0}".format(control.id)).
-												on("mousemove.{0} touchmove.{0}".format(control.id), function(e) {
-													e.preventDefault();  // prevent scrolling on touch devices
-
-													var loc = get_event_location(e);
-													var delta = calculate_delta(loc);
-
-													if (scope.settings.constrain_ar) {
-														delta.x = delta.y * control.aspect_ratio;
-													}
-
-													control.width = control.width + delta.x;
-													control.height = control.height + delta.y;
-													control.x = control.x + 0.5 * delta.y * Math.sin(-control.angle) - (0.5 * delta.x * (1 - Math.cos(control.angle)));
-													control.y = control.y + 0.5 * delta.x * Math.sin(control.angle) - (0.5 * delta.y * (1 - Math.cos(-control.angle)));
-
-													set_position();
-												});
+												on("mousemove.{0} touchmove.{0}".format(control.id), se_resize);
 											break;
 										case "sw":
 											$document.
 												off("mousemove.{0} touchmove.{0}".format(control.id)).
-												on("mousemove.{0} touchmove.{0}".format(control.id), function(e) {
-													e.preventDefault();  // prevent scrolling on touch devices
-
-													var loc = get_event_location(e);
-													var delta = calculate_delta(loc);
-
-													if (scope.settings.constrain_ar) {
-														delta.x = -delta.y * control.aspect_ratio;
-													}
-
-													control.width = control.width - delta.x;
-													control.height = control.height + delta.y;
-													control.x = control.x + delta.x * Math.cos(control.angle) + delta.y * 0.5 * Math.sin(-control.angle) + (0.5 * delta.x * (1 - Math.cos(control.angle)));
-													control.y = control.y + delta.x * Math.sin(control.angle) - (0.5 * delta.y * (1 - Math.cos(-control.angle))) - 0.5 * delta.x * Math.sin(control.angle);
-
-													set_position();
-												});
+												on("mousemove.{0} touchmove.{0}".format(control.id), sw_resize);
 											break;
 										case "nw":
 											$document.
 												off("mousemove.{0} touchmove.{0}".format(control.id)).
-												on("mousemove.{0} touchmove.{0}".format(control.id), function(e) {
-													e.preventDefault();  // prevent scrolling on touch devices
-
-													var loc = get_event_location(e);
-													var delta = calculate_delta(loc);
-
-													if (scope.settings.constrain_ar) {
-														delta.x = delta.y * control.aspect_ratio;
-													}
-
-													control.width = control.width - delta.x;
-													control.height = control.height - delta.y;
-													control.x = control.x + delta.x * Math.cos(control.angle) + delta.y * Math.sin(-control.angle) + (0.5 * delta.x * (1-Math.cos(control.angle))) - (0.5 * delta.y * Math.sin(-control.angle));
-													control.y = control.y + delta.y * Math.cos(-control.angle) + delta.x * Math.sin(control.angle) + (0.5 * delta.y * (1-Math.cos(-control.angle))) - (0.5 * delta.x * Math.sin(control.angle));
-
-													set_position();
-												});
+												on("mousemove.{0} touchmove.{0}".format(control.id), nw_resize);
 											break;
 										default:
 											console.error("Invalid Handle: {0}".format(handle));
@@ -334,61 +306,96 @@
 									if (scope.settings.move_enabled) {
 										$document
 											.off("mousemove.{0} touchmove.{0}".format(control.id))
-											.on("mousemove.{0} touchmove.{0}".format(control.id), function(e) {
-												e.preventDefault();  // prevent scrolling on touch devices
-
-												var loc = get_event_location(e);
-												var delta = get_mouse_delta(loc);
-												set_offset(loc);
-
-												control.x += delta.x;
-												control.y += delta.y;
-
-												set_position();
-											});
+											.on("mousemove.{0} touchmove.{0}".format(control.id), drag);
 									}
 								}
 							}
 						};
 
-						// only currently constraining aspect ratio on images
-						set_aspect_ratio();
+						function ne_resize(e) {
+							e.preventDefault();  // prevent scrolling on touch devices
 
-						// set up initial state - fix for firefox (add image to list)
-						elem.
-							css({"position": "absolute"}).
-							add(elem.find("img")).
-								attr("draggable", "false").
-								attr("unselectable", "on").
-								addClass("unselectable").
-								on("dragstart", function() { return false; } );
+							var loc = get_event_location(e);
+							var delta = calculate_delta(loc);
 
-						// timeout to give elements time to render
-						$timeout(function() {
+							if (scope.settings.constrain_ar) {
+								delta.x = -delta.y * control.aspect_ratio;
+							}
+
+							control.width = control.width + delta.x;
+							control.height = control.height - delta.y;
+							control.x = control.x + delta.y * Math.sin(-control.angle) - (0.5 * delta.y * Math.sin(-control.angle)) - delta.x * 0.5 * (1 - Math.cos(control.angle));
+							control.y = control.y + delta.y * Math.cos(-control.angle) + (0.5 * delta.y * (1 - Math.cos(-control.angle))) + (0.5 * delta.x * Math.sin(control.angle));
+
 							set_position();
-							set_rotation(control.angle);
-						}, 100);
+						};
 
-						if (scope.settings.enabled) {
-							elem.
-								off("mousedown.{0} touchstart.{0}".format(control.id)).
-								on("mousedown.{0} touchstart.{0}".format(control.id), mousedown);
+						function nw_resize(e) {
+							e.preventDefault();  // prevent scrolling on touch devices
 
-							$document.
-								off("mouseup.{0} touchend.{0}".format(control.id)).
-								on("mouseup.{0} touchend.{0}".format(control.id), function(e) {
-									$document.off("mousemove.{0} touchmove.{0}".format(control.id));
-								}).
-								off("mousedown.{0} touchstart.{0}".format(control.id)).
-								on("mousedown.{0} touchstart.{0}".format(control.id), function(e) {
-									var selected = e.target.id === control.id || ng.element(e.target).closest(".i-control").attr("id") === control.id;
-									if (!selected && control.selected) {
-										scope.$root.$apply_safe(function() {
-											control.selected = false;
-										});
-									}
-								});
-						}
+							var loc = get_event_location(e);
+							var delta = calculate_delta(loc);
+
+							if (scope.settings.constrain_ar) {
+								delta.x = delta.y * control.aspect_ratio;
+							}
+
+							control.width = control.width - delta.x;
+							control.height = control.height - delta.y;
+							control.x = control.x + delta.x * Math.cos(control.angle) + delta.y * Math.sin(-control.angle) + (0.5 * delta.x * (1-Math.cos(control.angle))) - (0.5 * delta.y * Math.sin(-control.angle));
+							control.y = control.y + delta.y * Math.cos(-control.angle) + delta.x * Math.sin(control.angle) + (0.5 * delta.y * (1-Math.cos(-control.angle))) - (0.5 * delta.x * Math.sin(control.angle));
+
+							set_position();
+						};
+
+						function se_resize(e) {
+							e.preventDefault();  // prevent scrolling on touch devices
+
+							var loc = get_event_location(e);
+							var delta = calculate_delta(loc);
+
+							if (scope.settings.constrain_ar) {
+								delta.x = delta.y * control.aspect_ratio;
+							}
+
+							control.width = control.width + delta.x;
+							control.height = control.height + delta.y;
+							control.x = control.x + 0.5 * delta.y * Math.sin(-control.angle) - (0.5 * delta.x * (1 - Math.cos(control.angle)));
+							control.y = control.y + 0.5 * delta.x * Math.sin(control.angle) - (0.5 * delta.y * (1 - Math.cos(-control.angle)));
+
+							set_position();
+						};
+
+						function sw_resize(e) {
+							e.preventDefault();  // prevent scrolling on touch devices
+
+							var loc = get_event_location(e);
+							var delta = calculate_delta(loc);
+
+							if (scope.settings.constrain_ar) {
+								delta.x = -delta.y * control.aspect_ratio;
+							}
+
+							control.width = control.width - delta.x;
+							control.height = control.height + delta.y;
+							control.x = control.x + delta.x * Math.cos(control.angle) + delta.y * 0.5 * Math.sin(-control.angle) + (0.5 * delta.x * (1 - Math.cos(control.angle)));
+							control.y = control.y + delta.x * Math.sin(control.angle) - (0.5 * delta.y * (1 - Math.cos(-control.angle))) - 0.5 * delta.x * Math.sin(control.angle);
+
+							set_position();
+						};
+
+						function drag(e) {
+							e.preventDefault();  // prevent scrolling on touch devices
+
+							var loc = get_event_location(e);
+							var delta = get_mouse_delta(loc);
+							set_offset(loc);
+
+							control.x += delta.x;
+							control.y += delta.y;
+
+							set_position();
+						};
 
 						scope.$on("$destroy", function() {
 							// remove handlers
