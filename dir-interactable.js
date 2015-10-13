@@ -14,7 +14,7 @@
 						'</div>'
 					].join("\n"),
 					scope: {
-						"options": "=dirInteractable"
+						"_options": "=dirInteractable"
 					},
 					restrict: "A",
 					replace: true,
@@ -35,7 +35,7 @@
 							angle: 0
 						};
 
-						scope.settings = ng.extend(defaults, scope.options);
+						scope.settings = ng.extend(defaults, scope._options);
 
 						var offset = {
 							x: 0,
@@ -49,6 +49,7 @@
 							x: scope.settings.x,
 							y: scope.settings.y,
 							angle: scope.settings.angle,
+							aspect_ratio: 1,
 							selected: false
 						};
 
@@ -106,7 +107,7 @@
 						};
 
 						var set_aspect_ratio = function() {
-							aspect_ratio = control.width / control.height;
+							control.aspect_ratio = control.width / control.height;
 						};
 
 						var get_rotation_offset = function() {
@@ -244,7 +245,7 @@
 													var delta = calculate_delta(loc);
 
 													if (scope.settings.constrain_ar) {
-														delta.x = -delta.y * aspect_ratio;
+														delta.x = -delta.y * control.aspect_ratio;
 													}
 
 													control.width = control.width + delta.x;
@@ -265,7 +266,7 @@
 													var delta = calculate_delta(loc);
 
 													if (scope.settings.constrain_ar) {
-														delta.x = delta.y * aspect_ratio;
+														delta.x = delta.y * control.aspect_ratio;
 													}
 
 													control.width = control.width + delta.x;
@@ -286,7 +287,7 @@
 													var delta = calculate_delta(loc);
 
 													if (scope.settings.constrain_ar) {
-														delta.x = -delta.y * aspect_ratio;
+														delta.x = -delta.y * control.aspect_ratio;
 													}
 
 													control.width = control.width - delta.x;
@@ -307,7 +308,7 @@
 													var delta = calculate_delta(loc);
 
 													if (scope.settings.constrain_ar) {
-														delta.x = delta.y * aspect_ratio;
+														delta.x = delta.y * control.aspect_ratio;
 													}
 
 													control.width = control.width - delta.x;
