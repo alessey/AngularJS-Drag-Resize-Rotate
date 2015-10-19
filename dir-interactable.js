@@ -37,11 +37,7 @@
 
 						scope.settings = ng.extend(defaults, scope._options);
 
-						var offset = {
-							x: 0,
-							y: 0
-						};
-
+						/* initialize control */
 						var control = {
 							id: scope.settings.id,
 							width: scope.settings.width,
@@ -50,7 +46,11 @@
 							y: scope.settings.y,
 							angle: scope.settings.angle,
 							aspect_ratio: scope.settings.width / scope.settings.height,
-							selected: false
+							selected: false,
+							offset: {
+								x: 0,
+								y: 0
+							}
 						};
 
 						/* scope linked properties */
@@ -86,7 +86,7 @@
 							}
 						});
 
-						/* set up initial state */
+						/* set up initial state, disable browser dragging images */
 						elem.
 							css({"position": "absolute"}).
 							add(elem.find("img")).
@@ -178,8 +178,8 @@
 
 						var get_mouse_delta = function(e) {
 							return {
-								x: e.pageX - offset.x,
-								y: e.pageY - offset.y
+								x: e.pageX - control.offset.x,
+								y: e.pageY - control.offset.y
 							};
 						};
 
@@ -201,7 +201,7 @@
 						};
 
 						var set_offset = function(e) {
-							offset = {
+							control.offset = {
 								x: e.pageX,
 								y: e.pageY
 							};
@@ -265,7 +265,7 @@
 									var handle = RegExp.$1.toLowerCase();
 
 									// resize
-									offset = {
+									control.offset = {
 										x: loc.pageX,
 										y: loc.pageY
 									};
@@ -298,7 +298,7 @@
 								}
 								else {
 									// drag
-									offset = {
+									control.offset = {
 										x: loc.pageX,
 										y: loc.pageY
 									};
